@@ -1,0 +1,26 @@
+import requests
+
+url = 'https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization=CWA-537EE379-A3A7-4319-A4A2-528A210E1C7A&downloadType=WEB&format=JSON'
+data = requests.get(url)   # 取得 JSON 檔案的內容為文字
+data_json = data.json()    # 轉換成 JSON 格式
+location = data_json['cwaopendata']['dataset']['location']   # 取出 location 的內容
+weather = {}   # 新增一個 weather 字典
+for i in location:
+    city = i['locationName']    # 縣市名稱
+    wx8 = i['weatherElement'][0]['time'][0]['parameter']['parameterName']    # 天氣現象
+    maxt8 = i['weatherElement'][1]['time'][0]['parameter']['parameterName']  # 最高溫
+    mint8 = i['weatherElement'][2]['time'][0]['parameter']['parameterName']  # 最低溫
+    ci8 = i['weatherElement'][3]['time'][0]['parameter']['parameterName']    # 舒適度
+    pop8 = i['weatherElement'][4]['time'][0]['parameter']['parameterName']   # 降雨機率
+    msg = f'最高溫{maxt8}度，最低溫{mint8}度, 降雨機率 {pop8}%，舒適度:{ci8}'  # 組合成天氣描述
+    
+    weather[city]=msg   # 記錄地區和描述
+
+
+show = ''
+for i in weather:
+    show = show + i + ','                       # 列出可輸入的縣市名稱
+show = show.strip(',')                          # 移除結尾逗號
+a = input(f'請輸入下方其中一個縣市\n( {show} )\n')  # 讓使用者輸入縣市名稱
+
+print(f'{a}，{weather[a]}。')              # 顯示結果
